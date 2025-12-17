@@ -1,0 +1,179 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Book structure
+struct Book {
+    int id;
+    string title;
+    string author;
+    bool isBorrowed;
+};
+
+// Borrower structure
+struct Borrower {
+    int id;
+    string name;
+};
+
+// Transaction structure
+struct Transaction {
+    int borrowerId;
+    int bookId;
+    string status; // "Borrowed" or "Returned"
+};
+
+// Library class
+class Library {
+private:
+    vector<Book> books;
+    vector<Borrower> borrowers;
+    vector<Transaction> transactions;
+    int bookCounter = 1;
+    int borrowerCounter = 1;
+
+public:
+    // Add a new book
+    void addBook(string title, string author) {
+        books.push_back({bookCounter++, title, author, false});
+        cout << "Book added successfully!\n";
+    }
+
+    // View all books
+    void viewBooks() {
+        cout << "\n--- Books in Library ---\n";
+        for (auto &book : books) {
+            cout << "ID: " << book.id << " | Title: " << book.title 
+                 << " | Author: " << book.author 
+                 << " | Status: " << (book.isBorrowed ? "Borrowed" : "Available") << "\n";
+        }
+        cout << "------------------------\n";
+    }
+
+    // Add a borrower
+    void addBorrower(string name) {
+        borrowers.push_back({borrowerCounter++, name});
+        cout << "Borrower added successfully!\n";
+    }
+
+    // View all borrowers
+    void viewBorrowers() {
+        cout << "\n--- Borrowers ---\n";
+        for (auto &b : borrowers) {
+            cout << "ID: " << b.id << " | Name: " << b.name << "\n";
+        }
+        cout << "-----------------\n";
+    }
+
+    // Borrow a book
+    void borrowBook(int borrowerId, int bookId) {
+        for (auto &book : books) {
+            if (book.id == bookId && !book.isBorrowed) {
+                book.isBorrowed = true;
+                transactions.push_back({borrowerId, bookId, "Borrowed"});
+                cout << "Book borrowed successfully!\n";
+                return;
+            }
+        }
+        cout << "Book not available or invalid ID.\n";
+    }
+
+    // Return a book
+    void returnBook(int borrowerId, int bookId) {
+        for (auto &book : books) {
+            if (book.id == bookId && book.isBorrowed) {
+                book.isBorrowed = false;
+                transactions.push_back({borrowerId, bookId, "Returned"});
+                cout << "Book returned successfully!\n";
+                return;
+            }
+        }
+        cout << "Invalid return request.\n";
+    }
+
+    // View transactions
+    void viewTransactions() {
+        cout << "\n--- Transactions ---\n";
+        for (auto &t : transactions) {
+            cout << "Borrower ID: " << t.borrowerId 
+                 << " | Book ID: " << t.bookId 
+                 << " | Status: " << t.status << "\n";
+        }
+        cout << "---------------------\n";
+    }
+};
+
+// Main program
+int main() {
+    Library library;
+    int choice;
+
+    do {
+        cout << "\n===== LIBRARY MANAGEMENT SYSTEM =====\n";
+        cout << "1. Add Book\n";
+        cout << "2. View Books\n";
+        cout << "3. Add Borrower\n";
+        cout << "4. View Borrowers\n";
+        cout << "5. Borrow Book\n";
+        cout << "6. Return Book\n";
+        cout << "7. View Transactions\n";
+        cout << "8. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+            case 1: {
+                string title, author;
+                cout << "Enter book title: ";
+                getline(cin, title);
+                cout << "Enter book author: ";
+                getline(cin, author);
+                library.addBook(title, author);
+                break;
+            }
+            case 2:
+                library.viewBooks();
+                break;
+            case 3: {
+                string name;
+                cout << "Enter borrower name: ";
+                getline(cin, name);
+                library.addBorrower(name);
+                break;
+            }
+            case 4:
+                library.viewBorrowers();
+                break;
+            case 5: {
+                int borrowerId, bookId;
+                cout << "Enter borrower ID: ";
+                cin >> borrowerId;
+                cout << "Enter book ID: ";
+                cin >> bookId;
+                library.borrowBook(borrowerId, bookId);
+                break;
+            }
+            case 6: {
+                int borrowerId, bookId;
+                cout << "Enter borrower ID: ";
+                cin >> borrowerId;
+                cout << "Enter book ID: ";
+                cin >> bookId;
+                library.returnBook(borrowerId, bookId);
+                break;
+            }
+            case 7:
+                library.viewTransactions();
+                break;
+            case 8:
+                cout << "Exiting Library Management System. Goodbye!\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 8);
+
+    return 0;
+}
